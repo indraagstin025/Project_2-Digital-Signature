@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}">
+    <title>Dashboard User</title>
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+            <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">Welcome, {{ session['username'] }}!</h1>
+            <p class="text-lg text-gray-700 text-center mb-6">This is your user dashboard.</p>
+
+            {% if session['role'] == 'user' %}
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">User Features</h2>
+            <p class="text-gray-600 mb-4">Here you can view your profile, update settings, and manage your account.</p>
+            <ul class="list-disc pl-5 text-gray-600 mb-6">
+                <li>View and edit your profile details</li>
+                <li>Update account settings</li>
+                <li>Track your activity and preferences</li>
+            </ul>
+            {% endif %}
+
+            <!-- Logout Button -->
+            <div class="mt-8 text-center">
+                <a href="{{ url_for('logout') }}" class="inline-block text-sm text-white bg-red-500 hover:bg-red-600 font-semibold py-2 px-4 rounded-md transition duration-300">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        // Menangani event ketika pengguna menekan tombol back
+        window.onpopstate = function(event) {
+            if (confirm('You are logged in. Do you want to log out?')) {
+                window.location.href = '/logout';  // Arahkan ke route logout jika ya
+            }
+        };
+
+        // Menambahkan history untuk memastikan event onpopstate berjalan
+        history.pushState(null, document.title, location.href);
+    </script>
+
+</body>
+</html>
