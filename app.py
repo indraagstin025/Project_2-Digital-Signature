@@ -89,6 +89,12 @@ def upload_document():
     else:
         flash('Invalid file format. Only PDF, DOCX, and TXT are allowed.', 'danger')
         return redirect(request.url)
+    
+    
+@app.route('/base')
+def base_route():
+    """Route untuk masuk ke Halaman Base"""
+    return render_template('base.html')
 
 @app.route('/logout')
 def logout():
