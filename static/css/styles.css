@@ -1,4 +1,60 @@
-body {
-    font-family: 'Source Sans Pro', sans-serif;
-    font-weight: 700; /* atau font-weight: bold; */
-  }
+#file-preview img {
+  border: 2px solid #e2e8f0; /* Border abu-abu */
+  border-radius: 8px; /* Membuat sudut melengkung */
+  margin-top: 10px;
+}
+
+#file-preview div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  height: 100px;
+  width: 100px;
+  background-color: #edf2f7;
+  border-radius: 8px;
+  margin: 10px auto;
+}
+
+    /* Drop area styling */
+    #drop-area {
+        transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    #drop-area.bg-indigo-100 {
+        background-color: #ebf4ff;
+    }
+
+    #drop-area.border-indigo-500 {
+        border-color: #5a67d8;
+    }
+
+    /* File preview styling */
+    #file-preview img {
+        max-width: 150px;
+        max-height: 150px;
+        border-radius: 8px;
+        margin: 0 auto;
+    }
+
+    #file-preview div.icon {
+        font-size: 60px;
+        color: #4a5568; /* Default gray */
+        margin: 0 auto;
+    }
+
+    #file-preview p {
+        margin: 0;
+        font-size: 14px;
+        color: #2d3748;
+        text-align: center;
+    }
+
+    /* Center content in the drop area */
+    #drop-area .flex {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
