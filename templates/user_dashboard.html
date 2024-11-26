@@ -6,38 +6,142 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/output.css') }}" />
     <title>Dashboard User</title>
   </head>
-  <body class="bg-gray-100 font-sans antialiased">
-    <div class="min-h-screen flex items-center justify-center">
-      <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
-        <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">Welcome, {{ session['username'] }}!</h1>
-        <p class="text-lg text-gray-700 text-center mb-6">This is your user dashboard.</p>
+  <body class="bg-gray-100 font-sans">
+    <!-- Wrapper Utama -->
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-md w-full space-y-8">
+        <!-- Card Utama -->
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-300">
+          <!-- Header -->
+          <header class="px-4 py-5 sm:px-6">
+            <h1 class="text-2xl font-bold text-center text-gray-900">Welcome, {{ session['username'] }}!</h1>
+            <p class="mt-1 text-center text-gray-600">This is your user dashboard.</p>
+          </header>
 
-        {% if session['role'] == 'user' %}
-        <h2 class="text-2xl font-semibold text-gray-800 mb-4">User Features</h2>
-        <p class="text-gray-600 mb-4">Here you can view your profile, update settings, and manage your account.</p>
-        <ul class="list-disc pl-5 text-gray-600 mb-6">
-          <li>View and edit your profile details</li>
-          <li>Update account settings</li>
-          <li>Track your activity and preferences</li>
-        </ul>
-        {% endif %}
+          <!-- Content -->
+          <main class="border-t border-gray-200">
+            <dl>
+              <!-- User Features -->
+              {% if session['role'] == 'user' %}
+              <section class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                <dt class="text-sm font-medium text-gray-500">User Features</dt>
+                <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                  <ul class="list-disc list-inside text-gray-700">
+                    <li>View and edit your profile details</li>
+                    <li>Update account settings</li>
+                    <li>Track your activity and preferences</li>
+                  </ul>
+                </dd>
+              </section>
+              {% endif %}
 
-        <!-- Logout Button -->
-        <div class="mt-8 text-center">
-          <a href="{{ url_for('logout') }}" class="inline-block text-sm text-white bg-red-500 hover:bg-red-600 font-semibold py-2 px-4 rounded-md transition duration-300"> Logout </a>
+              <!-- Flash Messages -->
+              {% with messages = get_flashed_messages(with_categories=true) %} {% if messages %}
+              <section class="px-4 py-5 sm:px-6">
+                {% for category, message in messages %}
+                <div class="text-center text-sm py-2 px-4 mb-4 {{ 'bg-green-500' if category == 'success' else 'bg-red-500' }} text-white rounded">{{ message }}</div>
+                {% endfor %}
+              </section>
+              {% endif %} {% endwith %}
+
+              <!-- Logout Button -->
+              <section class="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                <a
+                  href="{{ url_for('logout') }}"
+                  class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  Logout
+                </a>
+              </section>
+
+              <!-- Upload Form -->
+              <section class="px-4 py-5 sm:px-6">
+                <form action="{{ url_for('upload_document') }}" method="POST" enctype="multipart/form-data">
+                    <label for="file" class="block text-sm font-medium text-gray-700">Upload Document</label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="file" class="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                                    <span>Upload a file</span>
+                                    <input id="file" name="file" type="file" class="sr-only" onchange="displayFilePreview()"> 
+                                </label>
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p id="file-name" class="text-xs text-gray-500 mt-2">No file selected</p>
+                            <div id="file-preview" class="mt-4"></div> <!-- Tempat untuk preview file -->
+                        </div>
+                    </div>
+                    <button type="submit" class="mt-4 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Upload
+                    </button>
+                </form>
+                
+                <script>
+                    function displayFilePreview() {
+                        const input = document.getElementById('file');
+                        const filePreview = document.getElementById('file-preview');
+                        const fileName = document.getElementById('file-name');
+                        
+                        // Kosongkan elemen preview sebelumnya
+                        filePreview.innerHTML = "";
+                
+                        if (input.files.length > 0) {
+                            const file = input.files[0];
+                            const fileType = file.type;
+                            const fileURL = URL.createObjectURL(file);
+                
+                            // Tampilkan nama file
+                            fileName.textContent = `Selected file: ${file.name}`;
+                
+                            // Tampilkan ikon atau preview sesuai jenis file
+                            if (fileType.startsWith("image/")) {
+                                // Jika file adalah gambar
+                                const img = document.createElement("img");
+                                img.src = fileURL;
+                                img.alt = "Preview";
+                                img.style.maxWidth = "150px";
+                                img.style.maxHeight = "150px";
+                                filePreview.appendChild(img);
+                            } else if (fileType === "application/pdf") {
+                                // Jika file adalah PDF
+                                filePreview.innerHTML = `<div style="font-size: 50px; color: #f56565;">📄</div><p>PDF File</p>`;
+                            } else if (
+                                fileType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+                                fileType === "application/msword"
+                            ) {
+                                // Jika file adalah Word
+                                filePreview.innerHTML = `<div style="font-size: 50px; color: #2b6cb0;">📝</div><p>Word Document</p>`;
+                            } else {
+                                // Jika jenis file lainnya
+                                filePreview.innerHTML = `<div style="font-size: 50px; color: #718096;">📁</div><p>Unknown File</p>`;
+                            }
+                        } else {
+                            fileName.textContent = "No file selected";
+                        }
+                    }
+                </script>
+                
+                
+              </section>
+            </dl>
+          </main>
         </div>
       </div>
     </div>
 
+    <!-- Script -->
     <script type="text/javascript">
-      // Menangani event ketika pengguna menekan tombol back
+      // Handle back button event
       window.onpopstate = function (event) {
         if (confirm("You are logged in. Do you want to log out?")) {
-          window.location.href = "/logout"; // Arahkan ke route logout jika ya
+          window.location.href = "/logout";
         }
       };
 
-      // Menambahkan history untuk memastikan event onpopstate berjalan
+      // Add history to ensure onpopstate event works
       history.pushState(null, document.title, location.href);
     </script>
   </body>
